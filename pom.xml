@@ -63,6 +63,15 @@
     <org.eclipse.jetty.jetty-maven-plugin.version>11.0.20</org.eclipse.jetty.jetty-maven-plugin.version>
   </properties>
 
+    <url>http://localhost/teedy</url>
+
+  <distributionManagement>
+    <site>
+      <id>local-site</id>
+      <url>file://${project.basedir}/target/staging</url>
+    </site>
+  </distributionManagement>
+
   <scm>
     <connection>scm:git:https://github.com/sismics/docs.git</connection>
     <developerConnection>scm:git:https://github.com/docs/docs.git</developerConnection>
@@ -490,5 +499,15 @@
 
     </dependencies>
   </dependencyManagement>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>3.4.1</version>
+      </plugin>
+    </plugins>
+  </reporting>
 
 </project>
