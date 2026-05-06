@@ -9,9 +9,19 @@ pipeline {
         checkout scm
       }
     }
-    stage('Build & Test') {
+    stage('Build') {
       steps {
-        sh "mvn ${MVN_OPTS} clean package"
+        sh "mvn ${MVN_OPTS} -pl docs-core clean package"
+      }
+      post {
+        always {
+          archiveArtifacts artifacts: 'docs-core/target/*.jar', fingerprint: true
+        }
+      }
+    }
+    stage('Test') {
+      steps {
+        sh "mvn ${MVN_OPTS} -pl docs-core test"
       }
       post {
         always {
@@ -19,19 +29,23 @@ pipeline {
         }
       }
     }
-    stage('Archive Artifacts') {
-      steps {
-        archiveArtifacts artifacts: 'docs-core/target/*.jar', fingerprint: true
-      }
-    }
-    stage('Generate Site') {
+    stage('Site') {
       steps {
         sh "mvn ${MVN_OPTS} -pl docs-core site"
+        // publishHTML requires the HTML Publisher Plugin in Jenkins
+        publishHTML (target: [
+          allowMissing: false,
+          alwaysLinkToLastBuild: true,
+          keepAll: true,
+          reportDir: 'docs-core/target/site',
+          reportFiles: 'index.html',
+          reportName: 'Docs Core Site'
+        ])
       }
-    }
-    stage('Archive Site') {
-      steps {
-        archiveArtifacts artifacts: 'docs-core/target/site/**', fingerprint: true
+      post {
+        always {
+          archiveArtifacts artifacts: 'docs-core/target/site/**', fingerprint: true
+        }
       }
     }
   }
