@@ -98,6 +98,21 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>${org.apache.maven.plugins.maven-antrun-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>cleanup-test-javadoc</id>
+            <phase>site</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <echo message="Removing generated testapidocs from site (to hide Test Javadoc)"/>
+                <delete dir="${project.build.directory}/site/testapidocs"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <plugin>
@@ -575,11 +590,12 @@
             </reports>
           </reportSet>
         </reportSets>
-        <configuration>
-          <rulesets>
-            <ruleset>${maven.multiModuleProjectDirectory}/customize-rules.xml</ruleset>
-          </rulesets>
-        </configuration>
+          <configuration>
+            <rulesets>
+              <ruleset>${maven.multiModuleProjectDirectory}/customize-rules.xml</ruleset>
+            </rulesets>
+            <aggregate>true</aggregate>
+          </configuration>
       </plugin>
 
       <plugin>
