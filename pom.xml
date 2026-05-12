@@ -571,6 +571,7 @@
           <reportSet>
             <reports>
               <report>pmd</report>
+              <report>cpd</report>
             </reports>
           </reportSet>
         </reportSets>
@@ -588,6 +589,13 @@
         <configuration>
           <doclint>none</doclint>
         </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
       
       <plugin>
