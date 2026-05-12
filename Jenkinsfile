@@ -1,8 +1,5 @@
 pipeline {
   agent any
-  tools {
-    maven 'Maven'
-  }
   environment {
     MVN_OPTS = '-B'
   }
