@@ -1,5 +1,8 @@
 pipeline {
   agent any
+  tools {
+    maven 'Maven'
+  }
   environment {
     MVN_OPTS = '-B'
   }
@@ -11,7 +14,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh "mvn ${MVN_OPTS} -pl docs-core clean package"
+        sh "/opt/homebrew/bin/mvn ${MVN_OPTS} -pl docs-core clean package"
       }
       post {
         always {
@@ -21,7 +24,7 @@ pipeline {
     }
     stage('Test') {
       steps {
-        sh "mvn ${MVN_OPTS} -pl docs-core test"
+        sh "/opt/homebrew/bin/mvn ${MVN_OPTS} -pl docs-core test"
       }
       post {
         always {
@@ -31,7 +34,7 @@ pipeline {
     }
     stage('Site') {
       steps {
-        sh "mvn ${MVN_OPTS} -pl docs-core site"
+        sh "/opt/homebrew/bin/mvn ${MVN_OPTS} -pl docs-core site"
         // publishHTML requires the HTML Publisher Plugin in Jenkins
         publishHTML (target: [
           allowMissing: false,
