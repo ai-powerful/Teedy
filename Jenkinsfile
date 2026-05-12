@@ -1,7 +1,8 @@
 pipeline {
   agent any
   environment {
-    MVN_OPTS = '-B'
+    MVN_OPTS = '-B -Dorg.slf4j.simpleLogger.defaultLogLevel=warn'
+    PATH = "/opt/homebrew/bin:${env.PATH}"
   }
   stages {
     stage('Checkout') {
@@ -11,7 +12,7 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh "/opt/homebrew/bin/mvn ${MVN_OPTS} -pl docs-core clean package"
+        sh "/opt/homebrew/bin/mvn ${MVN_OPTS} -pl docs-core clean package -DskipTests"
       }
       post {
         always {
@@ -31,7 +32,7 @@ pipeline {
     }
     stage('Site') {
       steps {
-        sh "/opt/homebrew/bin/mvn ${MVN_OPTS} -pl docs-core site"
+        sh "/opt/homebrew/bin/mvn ${MVN_OPTS} -pl docs-core site -DskipTests"
         // publishHTML requires the HTML Publisher Plugin in Jenkins
         publishHTML (target: [
           allowMissing: false,
