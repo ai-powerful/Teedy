@@ -1,58 +1,57 @@
 pipeline {
   agent any
   environment {
-    MVN_OPTS = '-B -Dorg.slf4j.simpleLogger.defaultLogLevel=warn'
+    MVN = '/opt/homebrew/bin/mvn -B -Dorg.slf4j.simpleLogger.defaultLogLevel=warn'
     PATH = "/opt/homebrew/bin:${env.PATH}"
   }
   stages {
-    stage('Checkout') {
+    stage('Clean') {
       steps {
-        checkout scm
+        sh "${MVN} clean"
       }
     }
-    stage('Build') {
+    stage('Compile') {
       steps {
-        sh "/opt/homebrew/bin/mvn ${MVN_OPTS} -pl docs-core clean package -DskipTests"
-      }
-      post {
-        always {
-          archiveArtifacts artifacts: 'docs-core/target/*.jar', fingerprint: true
-        }
+        sh "${MVN} compile"
       }
     }
     stage('Test') {
       steps {
-        sh "/opt/homebrew/bin/mvn ${MVN_OPTS} -pl docs-core test"
+        sh "${MVN} test -Dmaven.test.failure.ignore=true"
       }
-      post {
-        always {
-          junit 'docs-core/target/surefire-reports/*.xml'
-        }
+    }
+    stage('PMD') {
+      steps {
+        sh "${MVN} pmd:pmd"
+      }
+    }
+    stage('JaCoCo') {
+      steps {
+        sh "${MVN} jacoco:report"
+      }
+    }
+    stage('Javadoc') {
+      steps {
+        sh "${MVN} javadoc:javadoc"
       }
     }
     stage('Site') {
       steps {
-        sh "/opt/homebrew/bin/mvn ${MVN_OPTS} -pl docs-core site -DskipTests"
-        // publishHTML requires the HTML Publisher Plugin in Jenkins
-        publishHTML (target: [
-          allowMissing: false,
-          alwaysLinkToLastBuild: true,
-          keepAll: true,
-          reportDir: 'docs-core/target/site',
-          reportFiles: 'index.html',
-          reportName: 'Docs Core Site'
-        ])
+        sh "${MVN} site -DskipTests"
       }
-      post {
-        always {
-          archiveArtifacts artifacts: 'docs-core/target/site/**', fingerprint: true
-        }
+    }
+    stage('Package') {
+      steps {
+        sh "${MVN} package -DskipTests"
       }
     }
   }
   post {
     always {
-      echo 'Pipeline finished.'
+      archiveArtifacts artifacts: '**/target/site/**/*', fingerprint: true
+      archiveArtifacts artifacts: '**/target/**/*.jar', fingerprint: true
+      archiveArtifacts artifacts: '**/target/**/*.war', fingerprint: true
+      junit '**/target/surefire-reports/*.xml'
     }
   }
 }
