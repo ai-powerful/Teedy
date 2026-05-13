@@ -23,6 +23,7 @@ pipeline {
             sh 'echo "Logging into Docker Hub..."'
             sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin https://registry.hub.docker.com'
             sh "docker push ${env.DOCKER_IMAGE}:${env.DOCKER_TAG}"
+            sh "docker tag ${env.DOCKER_IMAGE}:${env.DOCKER_TAG} ${env.DOCKER_IMAGE}:latest"
             sh "docker push ${env.DOCKER_IMAGE}:latest"
           }
         }
