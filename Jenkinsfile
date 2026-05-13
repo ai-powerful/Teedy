@@ -12,16 +12,18 @@ pipeline {
     stage('Build Docker Image') {
       steps {
         script {
-          dockerImage = docker.build("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}")
+          def dockerImage = docker.build("${env.DOCKER_IMAGE}:${env.DOCKER_TAG}")
         }
       }
     }
     stage('Push Docker Image') {
       steps {
         script {
-          docker.withRegistry('https://registry.hub.docker.com', "${env.DOCKER_HUB_CREDENTIALS_ID}") {
-            dockerImage.push()
-            dockerImage.push('latest')
+          withCredentials([usernamePassword(credentialsId: env.DOCKER_HUB_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+            sh 'echo "Logging into Docker Hub..."'
+            sh 'docker login -u "$DOCKER_USER" -p "$DOCKER_PASS" https://registry.hub.docker.com'
+            sh "docker push ${env.DOCKER_IMAGE}:${env.DOCKER_TAG}"
+            sh "docker push ${env.DOCKER_IMAGE}:latest"
           }
         }
       }
