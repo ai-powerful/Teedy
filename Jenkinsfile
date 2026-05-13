@@ -21,7 +21,7 @@ pipeline {
         script {
           withCredentials([usernamePassword(credentialsId: env.DOCKER_HUB_CREDENTIALS_ID, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
             sh 'echo "Logging into Docker Hub..."'
-            sh 'docker login -u "$DOCKER_USER" -p "$DOCKER_PASS" https://registry.hub.docker.com'
+            sh 'echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin https://registry.hub.docker.com'
             sh "docker push ${env.DOCKER_IMAGE}:${env.DOCKER_TAG}"
             sh "docker push ${env.DOCKER_IMAGE}:latest"
           }
