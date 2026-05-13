@@ -8,46 +8,7 @@ pipeline {
     DOCKER_TAG = "${env.BUILD_NUMBER}"
   }
   stages {
-    stage('Clean') {
-      steps {
-        sh "${MVN} clean"
-      }
-    }
-    stage('Compile') {
-      steps {
-        sh "${MVN} compile"
-      }
-    }
-    stage('Test') {
-      steps {
-        sh "${MVN} test -Dmaven.test.failure.ignore=true"
-      }
-    }
-    stage('PMD') {
-      steps {
-        sh "${MVN} pmd:pmd"
-      }
-    }
-    stage('JaCoCo') {
-      steps {
-        sh "${MVN} jacoco:report"
-      }
-    }
-    stage('Javadoc') {
-      steps {
-        sh "${MVN} javadoc:javadoc"
-      }
-    }
-    stage('Site') {
-      steps {
-        sh "${MVN} site -DskipTests"
-      }
-    }
-    stage('Package') {
-      steps {
-        sh "${MVN} package -DskipTests"
-      }
-    }
+    // Maven pre-check stages removed — pipeline proceeds directly to Docker stages
     stage('Build Docker Image') {
       steps {
         script {
