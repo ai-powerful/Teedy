@@ -3,8 +3,8 @@ pipeline {
   environment {
     MVN = '/opt/homebrew/bin/mvn -B -Dorg.slf4j.simpleLogger.defaultLogLevel=warn'
     PATH = "/opt/homebrew/bin:${env.PATH}"
-    DOCKER_HUB_CREDENTIALS_ID = 'dockerhub_credentials'
-    DOCKER_IMAGE = 'your-dockerhub-user/teedy-app'
+    DOCKER_HUB_CREDENTIALS_ID = '5f3062c4-73af-43c4-8554-04c01fe3550a'
+    DOCKER_IMAGE = 'fireflyqvq01/teddy'
     DOCKER_TAG = "${env.BUILD_NUMBER}"
   }
   stages {
@@ -58,7 +58,7 @@ pipeline {
     stage('Push Docker Image') {
       steps {
         script {
-          docker.withRegistry('https://registry.hub.docker.com', 'dockerhub_credentials') {
+          docker.withRegistry('https://registry.hub.docker.com', "${env.DOCKER_HUB_CREDENTIALS_ID}") {
             dockerImage.push()
             dockerImage.push('latest')
           }
